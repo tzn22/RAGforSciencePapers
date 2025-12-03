@@ -16,10 +16,24 @@ def llm_summarize(query, passages, tokenizer, model, max_new_tokens=256):
     prompt += f"Query: {query}\n\n"
     for i, p in enumerate(passages, 1):
         prompt += f"[{i}] {p[:1200]}\n\n"
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=8192).to(model.device)
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048).to(model.device)
     gen_config = GenerationConfig(max_new_tokens=max_new_tokens, temperature=0.0, do_sample=False)
-    out = model.generate(**inputs, generation_config=gen_config)
-    text = tokenizer.decode(out[0], skip_special_tokens=True)
-    # postprocess: remove the prompt tail
-    summary = text[len(tokenizer.decode(inputs["input_ids"][0], skip_special_tokens=True)):]
-    return summary.strip()
+
+    outputs = model.generate(
+        **inputs,
+        generation_config=gen_config,
+        max_new_tokens=max_new_tokens,
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.pad_token_id,
+        no_repeat_ngram_size=3,
+    )
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    # Отделяем prompt от сгенерированного текста более надежно
+    prompt_text = tokenizer.decode(inputs["input_ids"][0], skip_special_tokens=True)
+    if text.startswith(prompt_text):
+        summary = text[len(prompt_text):].strip()
+    else:
+        summary = text.strip()
+
+    return summary

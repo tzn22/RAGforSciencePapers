@@ -10,26 +10,9 @@ from tqdm.auto import tqdm
 import gc
 
 INDEX_DIR = "data_index"
-def chunk_text_generator(full_text, chunk_size=1500, overlap=200):
-    """ГЕНЕРАТОР - НЕ хранит chunks в памяти"""
-    text = full_text.replace("\n", " ").strip()
-    if len(text) <= chunk_size:
-        yield text
-        return
-
-    start = 0
-    n = len(text)
-
-    while start < n:
-        end = min(start + chunk_size, n)
-        chunk = text[start:end]
-        yield chunk  # yield вместо append
-        start = end - overlap
-        if start < 0:
-            start = 0
 
 def chunk_text(text, chunk_size=1500, overlap=200):
-    """Simple sliding window chunking."""
+    """ОРИГИНАЛЬНАЯ функция - но с лимитом chunks!"""
     text = text.replace("\n", " ").strip()
     if len(text) <= chunk_size:
         return [text]
@@ -37,8 +20,9 @@ def chunk_text(text, chunk_size=1500, overlap=200):
     chunks = []
     start = 0
     n = len(text)
+    max_chunks = 20  # ✅ ЛИМИТ: максимум 20 chunks на статью
 
-    while start < n:
+    while start < n and len(chunks) < max_chunks:
         end = min(start + chunk_size, n)
         chunk = text[start:end]
         chunks.append(chunk)
@@ -65,16 +49,18 @@ def main(args):
     texts = []
     metas = []
 
-    # ✅ ИСПРАВЛЕНИЕ: total=len(ds) для tqdm
-    for i, item in enumerate(tqdm(ds, total=len(ds), desc="Processing articles")):
-        title = item.get("article", "")[:200]  # article как title
+    for i, item in enumerate(tqdm(range(len(ds)), desc="Processing")):  # ✅ range(len(ds))
+        item = ds[i]  # ✅ Берем по индексу
+        title = item.get("abstract", "")[:400]
         summary = item.get("abstract", "")
         full_text = item.get("article", "")
 
         if not isinstance(full_text, str) or len(full_text) < 100:
             continue
 
-        for ch in chunk_text_generator(full_text, args.chunk_size, args.overlap):
+        chunks = chunk_text(full_text, args.chunk_size, args.overlap)
+
+        for ch in chunks:
             if len(ch) < 200:
                 continue
 
@@ -87,10 +73,11 @@ def main(args):
                 "source_idx": i
             })
 
-        # ✅ Очистка памяти каждые 50 статей
+        # ✅ Очистка каждые 50 статей
         if (i + 1) % 50 == 0:
             gc.collect()
 
+    print(f"Total chunks: {len(texts)}")  # ✅ Проверка размера
     print("Encoding embeddings...")
     embs = embedder.encode(texts, show_progress_bar=True, convert_to_numpy=True)
     embs = embs.astype("float32")
@@ -108,7 +95,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sample", type=int, default=1000)
+    parser.add_argument("--sample", type=int, default=200)  # ✅ Меньше для теста
     parser.add_argument("--chunk_size", type=int, default=1500)
     parser.add_argument("--overlap", type=int, default=200)
     parser.add_argument("--embed_model", type=str, default="sentence-transformers/all-MiniLM-L6-v2")
