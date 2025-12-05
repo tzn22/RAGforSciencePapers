@@ -11,7 +11,6 @@ from backend.app.rag_local_llm import rag_local_llm
 app = FastAPI(
     title="Scientific Literature Review Platform",
     description="Knowledge Graph RAG for ML/AI literature discovery",
-    version="2.2.0"
 )
 
 app.add_middleware(
