@@ -150,24 +150,25 @@ def run_full_benchmark():
         result = evaluate_rag_query(q)
         results.append(result)
         time.sleep(0.1)  # Backend protection
-    
-    df = pd.DataFrame(results.dropna(subset=['pipeline_latency_ms']))
-    
+
+    df = pd.DataFrame(results)
+    df_success = df[df['pipeline_latency_ms'] > 0]    
     if len(df) == 0:
         print("failed!")
         return
     
     metrics = {
-        'n_queries': len(df),
-        'success_rate': f"{len(df)/len(results)*100:.1f}%",
-        'latency_p50_search': df['search_latency_ms'].median(),
-        'latency_p95_search': df['search_latency_ms'].quantile(0.95),
-        'latency_p50_pipeline': df['pipeline_latency_ms'].median(),
-        'latency_p95_pipeline': df['pipeline_latency_ms'].quantile(0.95),
-        'community_recall': df['gold_community_recall'].mean(),
-        'topic_jaccard': df['topic_jaccard'].mean(),
-        'summary_quality': df['has_structure'].mean(),
-        'ollama_success': df['ollama_success'].mean()
+        'n_queries': len(df_success),
+        'total_tested': len(results),
+        'success_rate': f"{len(df_success)/len(results)*100:.1f}%",
+        'latency_p50_search': df_success['search_latency_ms'].median(),
+        'latency_p95_search': df_success['search_latency_ms'].quantile(0.95),
+        'latency_p50_pipeline': df_success['pipeline_latency_ms'].median(),
+        'latency_p95_pipeline': df_success['pipeline_latency_ms'].quantile(0.95),
+        'community_recall': df_success['gold_community_recall'].mean(),
+        'topic_jaccard': df_success['topic_jaccard'].mean(),
+        'summary_quality': df_success['has_structure'].mean(),
+        'ollama_success': df_success['ollama_success'].mean()
     }
     
     # Save
