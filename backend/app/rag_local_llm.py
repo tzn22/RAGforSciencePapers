@@ -1,4 +1,4 @@
-# backend/app/rag_local_llm.py - GraphRAG (unchanged)
+# backend/app/rag_local_llm.py - GraphRAG SCALED (100K+ articles ready)
 import os
 import pandas as pd
 import numpy as np
@@ -22,8 +22,11 @@ class InstantRetriever:
         summaries = self.communities["summary"].fillna("empty").astype(str).str[:1000]
         
         self.tfidf = TfidfVectorizer(
-            max_features=2000, ngram_range=(1,2), 
-            stop_words="english", lowercase=True
+            max_features=8000,
+            ngram_range=(1,3),
+            stop_words="english", 
+            lowercase=True,
+            min_df=2                   
         )
         self.tfidf.fit(summaries)
         
@@ -46,7 +49,7 @@ class InstantRetriever:
                 self.community_articles[cid] = []
         
         _retriever = self
-        print(f"✅ {self.index.ntotal} communities | 📚 {len(self.articles_df)} articles")
+        print(f"✅ {self.index.ntotal} communities | 📚 {len(self.articles_df)} articles | TF-IDF dims: {corpus_embs.shape[1]}")
 
 def clean_summary(raw_summary):
     raw_summary = str(raw_summary)
@@ -60,7 +63,7 @@ def clean_summary(raw_summary):
 
 retriever = InstantRetriever()
 
-def graphrag_query(query, k=5):
+def graphrag_query(query, k=10):
     try:
         q_emb = retriever.tfidf.transform([query]).toarray().astype(np.float32)
         q_emb = np.ascontiguousarray(q_emb)
@@ -79,10 +82,10 @@ def graphrag_query(query, k=5):
                     "score": float(scores[0][i]),
                     "summary": clean_summary(row["summary"]),
                     "entities": row.get("top_entities", []) if isinstance(row.get("top_entities"), list) else [],
-                    "articles": retriever.community_articles.get(cid, [])[:5]
+                    "articles": retriever.community_articles.get(cid, [])[:10]
                 })
         
-        while len(results) < min(3, k):
+        while len(results) < min(10, k):
             fallback_cid = len(results) % len(retriever.communities)
             row = retriever.communities.iloc[fallback_cid]
             results.append({
@@ -99,12 +102,13 @@ def graphrag_query(query, k=5):
             "n_sources": len(results),
             "debug_info": {
                 "communities_total": len(retriever.communities),
-                "articles_total": len(retriever.articles_df)
+                "articles_total": len(retriever.articles_df),
+                "tfidf_features": retriever.tfidf.max_features
             }
         }
     except Exception as e:
         print(f"❌ Query error: {e}")
         return {"question": query, "sources": [], "n_sources": 0, "error": str(e)}
 
-def rag_local_llm(query, k=5):
+def rag_local_llm(query, k=10):  
     return graphrag_query(query, k)

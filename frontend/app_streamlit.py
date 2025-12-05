@@ -1,9 +1,6 @@
-# frontend/app.py - v2.3: Shows communities used!
 import streamlit as st
 import requests
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
 BACKEND = os.getenv("BACKEND_URL", "http://localhost:8000")
 
