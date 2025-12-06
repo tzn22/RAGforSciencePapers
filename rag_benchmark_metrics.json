@@ -1,0 +1,12 @@
+{
+  "test_date": "2025-12-06T02:32:06.545656",
+  "n_queries": 87,
+  "success_rate": "87.6%",
+  "latency_p50_search": 8418.8,
+  "latency_p95_search": 14181.95,
+  "latency_p50_pipeline": 32457.3,
+  "latency_p95_pipeline": 50487.49999999999,
+  "summary_quality": 0.9170212765957447,
+  "ollama_success_rate": 1.0
+}
+

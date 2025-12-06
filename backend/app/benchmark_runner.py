@@ -132,31 +132,85 @@ def evaluate_rag_query(query_data):
             time.sleep(0.5)
     
     return {'error': 'timeout', 'search_latency_ms': -1}
+def print_results(metrics, df):
+    print("\n" + "="*60)
+    print("RAG BENCHMARK RESULTS")
+    print("="*60)
+    print(f"Success: {metrics['n_queries']} ({metrics['success_rate']})")
+    print(f" Search P50: {metrics['latency_p50_search']:.0f}ms")
+    print(f"Pipeline P50: {metrics['latency_p50_pipeline']:.0f}ms")
+    print(f"Recall: {metrics['community_recall']:.1%}")
+    print(f"Topics: {metrics['topic_jaccard']:.3f}")
+    print(f"Structure: {metrics['summary_quality']:.1%}")
+    print(f"Ollama: {metrics['ollama_success']:.1%}")
+
+def plot_fixed_charts(df, metrics):
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    
+    # Latency histograms
+    axes[0,0].hist(df['search_latency_ms'], bins=15, alpha=0.7, color='skyblue')
+    axes[0,0].axvline(metrics['latency_p95_search'], color='red', ls='--', lw=2)
+    axes[0,0].set_title(f'Search Latency (P95: {metrics["latency_p95_search"]:.0f}ms)')
+    axes[0,0].set_xlabel('ms')
+    
+    axes[0,1].hist(df['pipeline_latency_ms'], bins=15, alpha=0.7, color='lightgreen')
+    axes[0,1].axvline(metrics['latency_p95_pipeline'], color='red', ls='--', lw=2)
+    axes[0,1].set_title(f'Pipeline Latency (P95: {metrics["latency_p95_pipeline"]:.0f}ms)')
+    axes[0,1].set_xlabel('ms')
+    
+    structure_counts = df['has_structure'].value_counts().sort_index()
+    structure_labels = ['Unstructured', 'Structured']  # 0.0, 1.0 order
+    structure_colors = ['red', 'green']
+    
+    structure_values = [structure_counts.get(0.0, 0), structure_counts.get(1.0, 0)]
+    axes[1,0].pie(structure_values, 
+                  labels=structure_labels, 
+                  autopct='%1.1f%%', 
+                  colors=structure_colors)
+    axes[1,0].set_title('Summary Structure')
+    
+    ollama_counts = df['ollama_success'].value_counts().sort_index()
+    ollama_labels = ['Fallback/Other', ' Phi-3']  # 0.0, 1.0 order
+    ollama_colors = ['orange', 'green']
+    
+    ollama_values = [ollama_counts.get(0.0, 0), ollama_counts.get(1.0, 0)]
+    axes[1,1].pie(ollama_values, 
+                  labels=ollama_labels, 
+                  autopct='%1.1f%%', 
+                  colors=ollama_colors)
+    axes[1,1].set_title('Ollama Success')
+    
+    plt.tight_layout()
+    plt.savefig('rag_benchmark_plots.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    print("rag_benchmark_plots.png")
 
 def run_full_benchmark():
-    print("FIXED RAG Benchmark")
+    print("RAG Benchmark - FIXED plots!")
     print("=" * 60)
     
     test_queries = load_test_queries()
     if len(test_queries) < 10:
-        print(" no graphrag_index!")
-        return
+        print("Нужен graphrag_index!")
+        return None, None
     
-    print(f"test {len(test_queries)} ...")
+    print(f"Testing {len(test_queries)} queries...")
     
     results = []
-    for i, q in enumerate(test_queries):
-        print(f"  {i+1}/{len(test_queries)}: {q['query'][:50]}...")
+    for i, q in enumerate(test_queries[:50]):  # Лимит 50 для стабильности
+        print(f"  {i+1}/50: {q['query'][:50]}...")
         result = evaluate_rag_query(q)
         results.append(result)
-        time.sleep(0.1)  # Backend protection
-
-    df = pd.DataFrame(results)
-    df_success = df[df['pipeline_latency_ms'] > 0]    
-    if len(df) == 0:
-        print("failed!")
-        return
+        time.sleep(0.2)
     
+    df = pd.DataFrame(results)
+    df_success = df[df['pipeline_latency_ms'] > 0].copy()
+    
+    if len(df_success) == 0:
+        print("failed")
+        return None, None
+    
+    # Metrics
     metrics = {
         'n_queries': len(df_success),
         'total_tested': len(results),
@@ -173,59 +227,19 @@ def run_full_benchmark():
     
     # Save
     df.to_csv('rag_benchmark_results.csv', index=False)
+    df_success.to_csv('rag_benchmark_success.csv', index=False)
     with open('rag_benchmark_metrics.json', 'w') as f:
         json.dump(metrics, f, indent=2)
     
-    print_results(metrics, df)
-    plot_fixed_charts(df, metrics)
-
-def print_results(metrics, df):
-    print("\n" + "="*60)
-    print("RAG BENCHMARK RESULTS")
-    print("="*60)
-    print(f"Success: {metrics['n_queries']} ({metrics['success_rate']})")
-    print(f" Search P50: {metrics['latency_p50_search']:.0f}ms")
-    print(f"Pipeline P50: {metrics['latency_p50_pipeline']:.0f}ms")
-    print(f"Recall: {metrics['community_recall']:.1%}")
-    print(f"Topics: {metrics['topic_jaccard']:.3f}")
-    print(f"Structure: {metrics['summary_quality']:.1%}")
-    print(f"Ollama: {metrics['ollama_success']:.1%}")
-
-def plot_fixed_charts(df, metrics):
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    print_results(metrics, df_success)
+    plot_fixed_charts(df_success, metrics)
     
-    # Latency
-    axes[0,0].hist(df['search_latency_ms'], bins=15, alpha=0.7, color='skyblue')
-    axes[0,0].set_title('Search Latency')
-    axes[0,0].set_xlabel('ms')
-    
-    # Pie: Structure (FIXED)
-    structure_counts = df['has_structure'].value_counts()
-    labels = [' Structured', ' Unstructured']
-    colors = ['green', 'red']
-    axes[0,1].pie(structure_counts.values, 
-                  labels=[labels[i] for i in structure_counts.index], 
-                  autopct='%1.1f%%', colors=colors)
-    axes[0,1].set_title('Summary Structure')
-    
-    # Pie: Ollama (FIXED)
-    ollama_counts = df['ollama_success'].value_counts()
-    if len(ollama_counts) == 1:
-        # Только 1 значение → добавляем 0
-        ollama_counts[0] = ollama_counts.get(1, 0)
-    labels = ['Phi-3', 'Fallback']
-    colors = ['green', 'orange']
-    axes[1,0].pie([ollama_counts.get(1, 0), ollama_counts.get(0, 0)], 
-                  labels=labels, autopct='%1.1f%%', colors=colors)
-    axes[1,0].set_title('Ollama Success')
-    
-    # Recall distribution
-    axes[1,1].hist(df['gold_community_recall'], bins=2, alpha=0.7)
-    axes[1,1].set_title('Community Recall')
-    
-    plt.tight_layout()
-    plt.savefig('rag_benchmark_plots.png', dpi=300, bbox_inches='tight')
-    plt.show()
+    return metrics, df_success
 
 if __name__ == "__main__":
     metrics, df = run_full_benchmark()
+    if metrics:
+        print("\nBENCHMARK SUCCESS!")
+        print(f" {metrics['n_queries']}/{metrics['total_tested']} ({metrics['success_rate']})")
+
+

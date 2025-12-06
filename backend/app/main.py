@@ -30,7 +30,7 @@ class SummarizeRequest(BaseModel):
     top_k: int = 10
 @app.get("/")
 async def root():
-    return {"message": "🚀 Scientific Literature Review Platform v2.2 ready!"}
+    return {"message": "Scientific Literature Review Platform ready"}
 
 @app.post("/query")
 async def query_endpoint(request: QueryRequest):

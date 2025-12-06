@@ -1,0 +1,52 @@
+query_id,query_type,query_preview,search_latency_ms,pipeline_latency_ms,retrieved_communities,top_score,gold_community_recall,summary_words,communities_used,ollama_success,has_structure,topic_jaccard,error
+63,title,Optimizing Large-Scale Hyperparameters via Automated Learnin,120.0,1800.0,5,0.4371849000453949,0.0,134.0,5.0,1.0,1.0,0.0,
+444,title,The NLP Cookbook: Modern Recipes for Transformer based Deep ,120.0,1800.0,5,0.6762059330940247,0.0,107.0,5.0,1.0,1.0,0.0,
+325,title,Task-Agnostic Meta-Learning for Few-shot Learning,120.0,1800.0,5,0.4371849000453949,0.0,300.0,5.0,1.0,1.0,0.0,
+890,title,Kernel Interpolation for Scalable Online Gaussian Processes,120.0,1800.0,5,0.31480491161346436,0.0,79.0,5.0,1.0,1.0,0.0,
+38,title,Secure Precoding in MIMO-NOMA: A Deep Learning Approach,120.0,1800.0,5,0.6762059330940247,0.0,80.0,5.0,1.0,1.0,0.0,
+768,title,Detection of Alzheimer's Disease Using Graph-Regularized Con,120.0,1800.0,5,0.5048139095306396,0.0,127.0,5.0,1.0,1.0,0.0,
+447,title,Assessing the Effectiveness of Syntactic Structure to Learn ,120.0,1800.0,5,0.0,0.0,120.0,5.0,1.0,1.0,0.0,
+625,title,Supervised multi-specialist topic model with applications on,120.0,1800.0,5,0.0,0.0,114.0,5.0,1.0,1.0,0.0,
+731,title,Discovering Reinforcement Learning Algorithms,120.0,1800.0,5,0.508748471736908,0.0,108.0,5.0,1.0,1.0,0.0,
+966,title,A general framework for ensemble distribution distillation,120.0,1800.0,5,0.0,0.0,82.0,5.0,1.0,1.0,0.0,
+810,title,Adaptive Activity Monitoring with Uncertainty Quantification,120.0,1800.0,5,0.31480491161346436,0.0,154.0,5.0,1.0,1.0,0.0,
+136,title,Perception-Distortion Trade-off with Restricted Boltzmann Ma,120.0,1800.0,5,0.0,0.0,85.0,5.0,1.0,1.0,0.0,
+624,title,A Quasi-Newton Method Based Vertical Federated Learning Fram,120.0,1800.0,5,0.4371849000453949,0.0,165.0,5.0,1.0,1.0,0.0,
+9,title,Gaussian Process bandits with adaptive discretization,120.0,1800.0,5,0.31480491161346436,0.0,220.0,5.0,1.0,1.0,0.0,
+583,title,Inference Aided Reinforcement Learning for Incentive Mechani,120.0,1800.0,5,0.508748471736908,0.0,182.0,5.0,1.0,1.0,0.0,
+187,title,Nowcasting-Nets: Deep Neural Network Structures for Precipit,120.0,1800.0,5,0.6587866544723511,0.0,147.0,5.0,1.0,1.0,0.0,
+341,title,Predicting Abnormal Returns From News Using Text Classificat,120.0,1800.0,5,0.0,0.0,132.0,5.0,1.0,1.0,0.0,
+257,title,Comparison-Based Learning with Rank Nets,120.0,1800.0,5,0.4371849000453949,0.0,137.0,5.0,1.0,1.0,0.0,
+286,title,Learning and Sequencing of Object-Centric Manipulation Skill,120.0,1800.0,5,0.4371849000453949,0.0,137.0,5.0,1.0,1.0,0.0,
+752,title,Heterogeneous Data-Aware Federated Learning,120.0,1800.0,5,0.4371849000453949,0.0,109.0,5.0,1.0,1.0,0.0,
+771,title,Generative Modelling of 3D in-silico Spongiosa with Controll,120.0,1800.0,5,0.0,0.0,169.0,5.0,1.0,1.0,0.0,
+184,title,Efficiently Inducing Features of Conditional Random Fields,120.0,1800.0,5,0.0,0.0,82.0,5.0,1.0,1.0,0.0,
+548,title,SBNet: Segmentation-based Network for Natural Language-based,120.0,1800.0,5,0.2687997817993164,0.0,125.0,5.0,1.0,1.0,0.0,
+659,title,Multi-Step Knowledge-Aided Iterative ESPRIT for Direction Fi,120.0,1800.0,5,0.0,0.0,81.0,5.0,1.0,1.0,0.0,
+937,title,Probabilistic sequential matrix factorization,120.0,1800.0,5,0.0,0.0,185.0,5.0,1.0,1.0,0.0,
+524,title,Multi-Layer Convolutional Sparse Modeling: Pursuit and Dicti,120.0,1800.0,5,0.2655686140060425,0.0,108.0,5.0,1.0,1.0,0.0,
+808,title,"Towards Efficient Point Cloud Graph Neural Networks Through
+",120.0,1800.0,5,0.43928036093711853,0.0,102.0,5.0,1.0,1.0,0.0,
+46,title,Fair-SSL: Building fair ML Software with less data,120.0,1800.0,5,0.3270553648471832,0.0,150.0,5.0,1.0,1.0,0.0,
+368,title,GCN-SE: Attention as Explainability for Node Classification ,120.0,1800.0,5,0.0,0.0,203.0,5.0,1.0,1.0,0.0,
+76,title,Group level MEG/EEG source imaging via optimal transport: mi,120.0,1800.0,5,0.0,0.0,111.0,5.0,1.0,1.0,0.0,
+233,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+95,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+224,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+988,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+321,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+50,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+701,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+864,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+923,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+52,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+26,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+583,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+320,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+188,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+521,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+342,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+135,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+487,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+214,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
+811,,,-1.0,-1.0,0,,,,,,,,The truth value of an array wi
